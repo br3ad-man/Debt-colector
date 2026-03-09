@@ -4,8 +4,80 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Debt Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js" defer></script>
 </head>
 <body>
-    <h1>Welcome to the Debt Tracker Application</h1>
+    <div class="app">
+        <h1>Debt Tracker</h1>
+        <div class="form">
+            <input type="text" id="name" placeholder="Name" required />
+            <input type="number" id="amount" placeholder="Amount" required />
+            <button id="add-person">Add Person</button>
+        </div>
+        <canvas id="debtChart"></canvas>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody id="debt-table-body">
+                <!-- Dynamic Rows -->
+            </tbody>
+        </table>
+    </div>
+    <script>
+        const people = [];
+
+        document.getElementById('add-person').addEventListener('click', function () {
+            const name = document.getElementById('name').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            if (name && !isNaN(amount)) {
+                people.push({ name, amount });
+                updateTable();
+                updateChart();
+            }
+        });
+
+        function updateTable() {
+            const tbody = document.getElementById('debt-table-body');
+            tbody.innerHTML = '';
+            people.forEach(person => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${person.name}</td><td>${person.amount}</td>`;
+                tbody.appendChild(row);
+            });
+        }
+
+        function updateChart() {
+            const ctx = document.getElementById('debtChart').getContext('2d');
+            const names = people.map(p => p.name);
+            const amounts = people.map(p => p.amount);
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: names,
+                    datasets: [{
+                        label: 'Debt Amount',
+                        data: amounts,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    </script>
 </body>
 </html>
